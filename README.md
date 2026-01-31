@@ -1,6 +1,10 @@
 # vite-plugin-kim
 
+English | [简体中文](./README.zh-CN.md)
+
 A Vite plugin that implements global text enlargement and bold styling at build time.
+
+In some countries, all websites have a program that enlarges and bolds the names of their leaders to show respect for them. This plugin is inspired by that.
 
 You can easily highlight specified text in your **Vue and React** projects by configuring this plugin.
 
@@ -189,6 +193,37 @@ function App() {
   )
 }
 ```
+
+## Development
+
+### Setup
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build package
+pnpm build
+
+# Run tests
+pnpm test
+
+# Type check
+pnpm typecheck
+```
+
+### Publishing
+
+This project uses GitHub Actions for automated publishing to npm. To publish a new version:
+
+1. Update version in `package.json`
+2. Commit and push changes
+3. Create a new release on GitHub with a tag (e.g., `v1.0.0`)
+4. The publish workflow will automatically run and publish to npm
+
+**Requirements:**
+- Add `NPM_TOKEN` to your GitHub repository secrets
+- The token should have publish permissions for the package
 
 ## Acknowledgments
 
