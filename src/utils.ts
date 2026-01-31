@@ -116,11 +116,12 @@ export function createFilter(
   exclude: (string | RegExp)[]
 ): (id: string) => boolean {
   return (id: string) => {
-    // 排除检查
+    const cleanId = id.split('?')[0].split('#')[0]
+    
     for (const pattern of exclude) {
       if (typeof pattern === 'string') {
-        if (id.includes(pattern)) return false
-      } else if (pattern.test(id)) {
+        if (cleanId.includes(pattern)) return false
+      } else if (pattern.test(cleanId)) {
         return false
       }
     }
@@ -128,8 +129,8 @@ export function createFilter(
     // 包含检查
     for (const pattern of include) {
       if (typeof pattern === 'string') {
-        if (id.includes(pattern)) return true
-      } else if (pattern.test(id)) {
+        if (cleanId.includes(pattern)) return true
+      } else if (pattern.test(cleanId)) {
         return true
       }
     }

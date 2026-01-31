@@ -23,6 +23,7 @@ export default function kimPlugin(options: KimPluginOptions = {}): Plugin {
 
   return {
     name: 'vite-plugin-kim',
+    enforce: 'pre', // 在其他插件之前执行
 
     async configResolved(resolvedConfig) {
       viteConfig = resolvedConfig

@@ -1,4 +1,5 @@
 import MagicString from 'magic-string'
+import { parse } from '@vue/compiler-sfc'
 import type { ResolvedKimConfig } from '../types'
 import { matchTexts } from '../utils'
 
@@ -14,14 +15,16 @@ export function transformVue(
   const s = new MagicString(code)
   let hasChanges = false
 
-  // 提取 template
-  const templateMatch = code.match(/<template[^>]*>([\s\S]*?)<\/template>/)
-  if (!templateMatch) {
+  // 使用 Vue SFC 编译器解析
+  const { descriptor, errors } = parse(code, { filename: id })
+  
+  if (errors.length > 0 || !descriptor.template) {
     return null
   }
 
-  const templateContent = templateMatch[1]
-  const templateStart = templateMatch.index! + templateMatch[0].indexOf('>') + 1
+  const template = descriptor.template
+  const templateContent = template.content
+  const templateStart = template.loc.start.offset
 
   // process template content
   const transformed = transformTemplateText(templateContent, config, false)
@@ -49,12 +52,23 @@ function transformTemplateText(
 ): string {
   const className = isJsx ? 'className' : 'class'
 
-  // 使用正则匹配标签之间的文本内容
-  // 排除 data-kim-ignore 属性的元素
-  const result = content.replace(
-    />([^<]+)</g,
-    (match, textContent) => {
+  // 改进的正则表达式：匹配标签之间的文本，但排除 Vue 插值
+  // 匹配 >text< 之间的内容，但不在 {{ }} 内
+  let result = content
+  let hasChanges = false
+
+  // 先处理纯文本节点（不在标签或插值内的文本）
+  result = result.replace(
+    />([^<{]+)</g,
+    (match, textContent, offset) => {
+      // 检查是否是纯空白
       if (/^\s*$/.test(textContent)) {
+        return match
+      }
+
+      // 检查是否在插值内（检查前后是否有 {{ 或 }}）
+      const before = content.slice(Math.max(0, offset - 10), offset)
+      if (before.includes('{{')) {
         return match
       }
 
@@ -64,6 +78,7 @@ function transformTemplateText(
         return match
       }
 
+      hasChanges = true
       let newText = ''
       let lastIndex = 0
 
@@ -79,7 +94,43 @@ function transformTemplateText(
     }
   )
 
+  // 处理 Vue 插值内的文本 {{ text }}
+  result = result.replace(
+    /\{\{([^}]+)\}\}/g,
+    (match, interpolation) => {
+      const trimmed = interpolation.trim()
+      
+      // 只处理字符串字面量
+      const stringMatch = trimmed.match(/^['"](.+)['"]$/)
+      if (!stringMatch) {
+        return match
+      }
+
+      const stringContent = stringMatch[1]
+      const { matched, matches } = matchTexts(stringContent, config.texts)
+
+      if (!matched) {
+        return match
+      }
+
+      hasChanges = true
+      // 在插值内，我们不能使用 HTML，需要保持为字符串
+      // 或者转换为多个插值
+      // 这里简单处理：保持原样，只在纯文本节点处理
+      return match
+    }
+  )
+
   return result
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
 }
 
 export { transformTemplateText }
