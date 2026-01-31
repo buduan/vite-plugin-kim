@@ -1,0 +1,67 @@
+{
+  "name": "vite-plugin-kim",
+  "version": "0.1.0",
+  "description": "A Vite plugin for global text enlargement and bold styling, highlighting text in Vue and React projects with ease. Refer to Dear Comrade Kim Jong Un (A Joke)",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./client": {
+      "import": {
+        "types": "./dist/client.d.ts",
+        "default": "./dist/client.js"
+      },
+      "require": {
+        "types": "./dist/client.d.cts",
+        "default": "./dist/client.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "vite",
+    "vite-plugin",
+    "vue",
+    "react",
+    "text",
+    "bold",
+    "enlarge",
+    "font"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "vite": "^4.0.0 || ^5.0.0 || ^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.0",
+    "vite": "^6.0.0",
+    "vitest": "^2.0.0"
+  },
+  "dependencies": {
+    "@vue/compiler-sfc": "^3.4.0",
+    "magic-string": "^0.30.5"
+  }
+}
