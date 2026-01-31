@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-kim",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A Vite plugin for global text enlargement and bold styling, highlighting text in Vue and React projects with ease. Refer to Dear Comrade Kim Jong Un (A Joke)",
   "type": "module",
   "main": "./dist/index.cjs",
